@@ -1,0 +1,28 @@
+# Python environment
+venv/
+env/
+.venv/
+*.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environment variables and secrets
+.env
+.streamlit/secrets.toml
+
+# Uploaded files storage
+file_storage/*
+!file_storage/.gitkeep
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Docker
+.docker/
