@@ -1,0 +1,3 @@
+DB_HOST = "localhost"
+DB_PORT = "1521"
+DB_SERVICE = "FREEPDB1"
