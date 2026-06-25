@@ -1,5 +1,5 @@
 # passport_management_system
-
+```text
 passport_management_system/
 |-- db_scripts/                   (Thư mục chứa các kịch bản SQL khởi tạo và thiết lập bảo mật Oracle)
 |   |-- 01_init_tables.sql        (Khởi tạo schema, các bảng dữ liệu nền tảng và phân quyền cơ bản)
@@ -38,3 +38,4 @@ passport_management_system/
 |
 |-- file_storage/                 (Thư mục lưu trữ vật lý các tệp đính kèm do người dùng tải lên như ảnh thẻ, giấy tờ)
 |-- docker-compose.yml            (Tệp cấu hình môi trường Docker để khởi chạy đồng thời Oracle DB và Web App)
+```
