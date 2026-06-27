@@ -68,7 +68,7 @@ def main():
     st.sidebar.title("Menu Chức năng")
     
     if st.session_state.user_role is None:
-        if st.sidebar.button("Đăng nhập Cán bộ"):
+        if st.sidebar.button("Đăng nhập"):
             st.session_state.current_page = "login"
             st.rerun()
         if st.sidebar.button("Đăng ký hộ chiếu"):
@@ -76,15 +76,24 @@ def main():
             st.rerun()
     else:
         st.sidebar.write(f"Quyền hiện tại: {st.session_state.user_role}")
+        if st.session_state.user_role == "ROLE_GS":
+            if st.sidebar.button("Cấp tài khoản nhân viên"):
+                st.session_state.current_page = "admin_users"
+                st.rerun()
         if st.sidebar.button("Đăng xuất"):
             st.session_state.user_role = None
             st.session_state.current_page = "login"
+            st.session_state.pop("username", None)
+            st.session_state.pop("db_username", None)
+            st.session_state.pop("db_password", None)
             st.rerun()
 
     if st.session_state.current_page == "login":
         login_view.render_login_page()
     elif st.session_state.current_page == "register":
         register_view.render_register_page()
+    elif st.session_state.current_page == "admin_users" and st.session_state.user_role == "ROLE_GS":
+        register_view.render_admin_user_page()
     elif st.session_state.current_page == "xt_dashboard" and st.session_state.user_role == "ROLE_XT":
         xt_view.render_xt_page()
     elif st.session_state.current_page == "xd_dashboard" and st.session_state.user_role == "ROLE_XD":
@@ -94,7 +103,7 @@ def main():
     elif st.session_state.current_page == "gs_dashboard" and st.session_state.user_role == "ROLE_GS":
         gs_view.render_gs_page()
     else:
-        st.error("Bạn không có quyền truy cập hoặc chưa đăng nhập.")
+        st.markdown("**Bạn không có quyền truy cập hoặc chưa đăng nhập.**")
 
 if __name__ == "__main__":
     main()
