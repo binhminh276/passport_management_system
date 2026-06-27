@@ -1,5 +1,5 @@
 ALTER SESSION SET CONTAINER = FREEPDB1;
--- Buoc 1: Khoi tao level, compartment va group
+-- Buoc 1: Khoi tao level, compartment va group (LBACSYS)
 EXEC SA_SYSDBA.CREATE_POLICY(policy_name => 'PASSPORT_MAC_POL', column_name => 'MAC_LABEL');
 
 EXEC SA_COMPONENTS.CREATE_LEVEL('PASSPORT_MAC_POL', 100, 'PUB', 'PUBLIC');
@@ -12,7 +12,7 @@ EXEC SA_COMPONENTS.CREATE_COMPARTMENT('PASSPORT_MAC_POL', 30, 'LT', 'LUU_TRU');
 
 EXEC SA_COMPONENTS.CREATE_GROUP('PASSPORT_MAC_POL', 100, 'TW', 'TRUNG_UONG', NULL);
 
---Buoc 2: Dinh nghia nhan hop le, ap dung chinh sach, cap quyen gan nhan cho sec_mgr
+--Buoc 2: Dinh nghia nhan hop le, ap dung chinh sach, cap quyen gan nhan cho sec_mgr (LBACSYS)
 EXEC SA_LABEL_ADMIN.CREATE_LABEL('PASSPORT_MAC_POL', 1001, 'PUB:LT:TW');
 EXEC SA_LABEL_ADMIN.CREATE_LABEL('PASSPORT_MAC_POL', 2001, 'CONF:XT:TW');
 EXEC SA_LABEL_ADMIN.CREATE_LABEL('PASSPORT_MAC_POL', 2002, 'CONF:XD:TW');
@@ -21,10 +21,57 @@ EXEC SA_LABEL_ADMIN.CREATE_LABEL('PASSPORT_MAC_POL', 3001, 'SEC:XT,XD,LT:TW');
 
 EXEC SA_POLICY_ADMIN.APPLY_TABLE_POLICY(policy_name => 'PASSPORT_MAC_POL', schema_name => 'PASSPORT_APP', table_name => 'PASSPORT_DATA', table_options => 'READ_CONTROL, WRITE_CONTROL, LABEL_DEFAULT');
 EXEC SA_POLICY_ADMIN.APPLY_TABLE_POLICY(policy_name => 'PASSPORT_MAC_POL', schema_name => 'PASSPORT_APP', table_name => 'RESIDENT_DATA', table_options => 'READ_CONTROL, WRITE_CONTROL, LABEL_DEFAULT');
-
+--**CAP QUYEN CHO SEC**
 GRANT PASSPORT_MAC_POL_DBA TO SEC_MGR;
+-- Cấp đặc quyền FULL của chính sách PASSPORT_MAC_POL cho SEC_MGR
+EXEC SA_USER_ADMIN.SET_USER_PRIVS('PASSPORT_MAC_POL', 'SEC_MGR', 'FULL');
+-- Gán nhãn cấp cao cho SEC
+EXEC SA_USER_ADMIN.SET_USER_LABELS( -
+    policy_name => 'PASSPORT_MAC_POL', -
+    user_name => 'SEC_MGR', -
+    max_read_label => 'SEC:XT,XD,LT:TW', -
+    max_write_label => 'SEC:XT,XD,LT:TW', -
+    def_label => 'SEC:XT,XD,LT:TW', -
+    row_label => 'SEC:XT,XD,LT:TW' -
+);
 
---Buoc 3: Gan nhan (SEC_MGR)
+--SEC_MGR
+--Buoc 3: Gan tao user trong database va gan nhan (SEC_MGR)
+ALTER SESSION SET CONTAINER = FREEPDB1;
+
+DECLARE
+    v_label VARCHAR2(50);
+    v_count NUMBER;
+BEGIN
+    FOR rec IN (SELECT USERNAME, DB_ROLE FROM PASSPORT_APP.APP_USERS) LOOP
+        SELECT COUNT(*) INTO v_count FROM ALL_USERS WHERE USERNAME = UPPER(rec.USERNAME);
+        IF v_count = 0 THEN
+            EXECUTE IMMEDIATE 'CREATE USER ' || UPPER(rec.USERNAME) || ' IDENTIFIED BY "123"';
+            EXECUTE IMMEDIATE 'GRANT CONNECT TO ' || UPPER(rec.USERNAME);
+            EXECUTE IMMEDIATE 'GRANT ' || UPPER(rec.DB_ROLE) || ' TO ' || UPPER(rec.USERNAME);
+            
+            IF rec.DB_ROLE = 'ROLE_CD' THEN v_label := 'CONF:XT:TW';
+            ELSIF rec.DB_ROLE = 'ROLE_XT' THEN v_label := 'CONF:XT:TW';
+            ELSIF rec.DB_ROLE = 'ROLE_XD' THEN v_label := 'CONF:XD:TW';
+            ELSIF rec.DB_ROLE = 'ROLE_LT' THEN v_label := 'PUB:LT:TW';
+            ELSIF rec.DB_ROLE = 'ROLE_GS' THEN v_label := 'SEC:XT,XD,LT:TW';
+            END IF;
+
+            SA_USER_ADMIN.SET_USER_LABELS(
+                policy_name     => 'PASSPORT_MAC_POL',
+                user_name       => UPPER(rec.USERNAME),
+                max_read_label  => v_label,
+                max_write_label => v_label,
+                def_label       => v_label,
+                row_label       => v_label
+            );
+        END IF;
+    END LOOP;
+END;
+/
+--Buoc 4: Gan UPDATE LABEL (SEC_MGR)
+ALTER SESSION SET CONTAINER = FREEPDB1;
+
 UPDATE PASSPORT_APP.PASSPORT_DATA 
 SET MAC_LABEL = CHAR_TO_LABEL('PASSPORT_MAC_POL', 'CONF:XT:TW') 
 WHERE TRANG_THAI = 'Da nop';
@@ -38,6 +85,6 @@ SET MAC_LABEL = CHAR_TO_LABEL('PASSPORT_MAC_POL', 'PUB:LT:TW')
 WHERE TRANG_THAI = 'Da luu tru';
 
 UPDATE PASSPORT_APP.RESIDENT_DATA 
-SET MAC_LABEL = CHAR_TO_LABEL('PASSPORT_MAC_POL', 'CONF:XT,XD,LT:TW');
+SET MAC_LABEL = CHAR_TO_LABEL('PASSPORT_MAC_POL', 'CONF:XT:TW');
 
-
+COMMIT;
