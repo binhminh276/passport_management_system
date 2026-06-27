@@ -8,7 +8,9 @@ passport_management_system/
 |   |-- 04_xd_vpd_policy.sql      (Thiết lập chính sách VPD/RLS chặn xem dữ liệu dân cư đối với bộ phận Xét duyệt)
 |   |-- 05_lt_masking_policy.sql  (Thiết lập chính sách che giấu dữ liệu Column Masking bảo vệ thông tin cá nhân cho Lưu trữ)
 |   |-- 06_gs_audit_policy.sql    (Thiết lập Unified Auditing ghi nhật ký thao tác dữ liệu phục vụ bộ phận Giám sát)
-|
+|   |-- 07_mac_ols_policy.sql    (Thiết lập level, compartment, group và tạo user, gán nhãn thủ công cho mock_data)
+|   |-- 08_proc_tao_tai_khoan.sql    (Proc gán label tự động khi có user mới được tạo)
+|   
 |-- app/                          (Thư mục chứa mã nguồn ứng dụng web giao diện Python Streamlit)
 |   |-- main.py                   (Tệp chạy chính, quản lý cấu hình trang, điều hướng và kiểm soát trạng thái đăng nhập)
 |   |-- config.py                 (Tệp lưu trữ các tham số hệ thống và cấu hình kết nối CSDL)
