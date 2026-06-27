@@ -88,3 +88,29 @@ UPDATE PASSPORT_APP.RESIDENT_DATA
 SET MAC_LABEL = CHAR_TO_LABEL('PASSPORT_MAC_POL', 'CONF:XT:TW');
 
 COMMIT;
+
+--Bước 5: Cấp quyền cho các bộ phận đẩy hồ sơ (SEC_MGR)
+ALTER SESSION SET CONTAINER = FREEPDB1;
+
+DECLARE
+    v_privs VARCHAR2(50);
+BEGIN
+    FOR rec IN (SELECT USERNAME, DB_ROLE FROM PASSPORT_APP.APP_USERS) LOOP
+        IF rec.DB_ROLE = 'ROLE_XT' THEN
+            v_privs := 'WRITEUP';
+        ELSIF rec.DB_ROLE = 'ROLE_XD' THEN
+            v_privs := 'WRITEDOWN';
+        ELSE
+            v_privs := NULL;
+        END IF;
+
+        IF v_privs IS NOT NULL THEN
+            SA_USER_ADMIN.SET_USER_PRIVS(
+                policy_name => 'PASSPORT_MAC_POL',
+                user_name   => UPPER(rec.USERNAME),
+                privileges  => v_privs
+            );
+        END IF;
+    END LOOP;
+END;
+/
