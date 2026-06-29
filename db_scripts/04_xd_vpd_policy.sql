@@ -12,6 +12,13 @@ ALTER SESSION SET CONTAINER = FREEPDB1;
 GRANT CREATE PROCEDURE TO SEC_MGR;
 GRANT EXECUTE ON DBMS_RLS TO SEC_MGR;
 
+-- Cấp quyền xem thông tin tài khoản và tỉnh thành để hiển thị tên tỉnh của cán bộ lên giao diện
+GRANT SELECT ON PASSPORT_APP.APP_USERS TO ROLE_XD;
+GRANT SELECT ON PASSPORT_APP.TINH_THANH TO ROLE_XD;
+
+-- Cấp quyền xem bảng lịch sử để phục vụ tính năng "Nhật ký thao tác cá nhân" vừa thêm
+GRANT SELECT ON PASSPORT_APP.PASSPORT_REQUEST_HISTORY TO ROLE_XD;
+
 COMMIT;
 -- XONG PHẦN 1, BẮT BUỘC PHẢI DISCONNECT VÀ CONNECT LẠI TÀI KHOẢN SEC_MGR
 
