@@ -9,7 +9,7 @@
 ---------------------------------------------------------------------------------
 ALTER SESSION SET CONTAINER = FREEPDB1;
 
-GRANT DBA TO SEC_MGR;
+GRANT CREATE PROCEDURE TO SEC_MGR;
 GRANT EXECUTE ON DBMS_RLS TO SEC_MGR;
 
 COMMIT;
