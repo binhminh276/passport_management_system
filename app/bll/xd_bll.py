@@ -46,3 +46,44 @@ def xu_ly_ho_so(username, reg_id, old_status, action_type):
         raise ValueError("Hành động không hợp lệ")
 
     xd_dal.execute_cap_nhat_ho_so(username, reg_id, old_status, new_status, new_mac_label)
+
+def get_ten_tinh_quan_ly(username):
+    """Gọi DAL lấy tên tỉnh quản lý."""
+    return xd_dal.fetch_ten_tinh_quan_ly(username)
+
+def get_lich_su_thao_tac(username):
+    """Gọi DAL lấy lịch sử và định dạng lại cấu trúc dữ liệu."""
+    rows = xd_dal.fetch_lich_su_thao_tac(username)
+    ket_qua = []
+    for row in rows:
+        history_id, reg_id, trang_thai_cu, trang_thai_moi, thoi_gian_cap_nhat = row
+        ket_qua.append({
+            "history_id": history_id,
+            "reg_id": reg_id,
+            "trang_thai_cu": trang_thai_cu if trang_thai_cu else "N/A",
+            "trang_thai_moi": trang_thai_moi,
+            "thoi_gian_cap_nhat": thoi_gian_cap_nhat
+        })
+    return ket_qua
+
+def get_chi_tiet_ho_so(username, reg_id):
+    """Gọi DAL lấy chi tiết hồ sơ và định dạng lại."""
+    row = xd_dal.fetch_chi_tiet_ho_so(username, reg_id)
+    if not row:
+        return None
+        
+    return {
+        "reg_id": row[0],
+        "cccd": row[1],
+        "ho_ten": row[2] if row[2] else "Chưa cập nhật",
+        "ngay_sinh": row[3].strftime("%d/%m/%Y") if row[3] else "N/A",
+        "gioi_tinh": row[4] if row[4] else "N/A",
+        "sdt": row[5] if row[5] else "N/A",
+        "email": row[6] if row[6] else "N/A",
+        "thoi_gian_tao": row[7].strftime("%d/%m/%Y %H:%M") if row[7] else "N/A",
+        "trang_thai": row[8],
+        # Thêm 3 trường mới
+        "loai_yeu_cau": row[9] if len(row) > 9 and row[9] else "Không xác định",
+        "anh_chan_dung": row[10] if len(row) > 10 and row[10] else None,
+        "giay_to_dinh_kem": row[11] if len(row) > 11 and row[11] else None
+    }
