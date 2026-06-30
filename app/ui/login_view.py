@@ -10,6 +10,10 @@ def render_login_page():
         button[aria-label="Show password text"],
         button[aria-label="Hide password text"] {
             display: none !important;
+            width: 0 !important;
+            min-width: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
         }
 
         div[data-testid="InputInstructions"] {
@@ -25,13 +29,13 @@ def render_login_page():
         .block-container {
             width: 100%;
             max-width: 100%;
-            padding: clamp(2rem, 10vh, 7rem) clamp(1rem, 4vw, 4rem) 2rem;
+            padding: clamp(2rem, 8vh, 5rem) clamp(1rem, 4vw, 4rem) 2rem;
         }
 
         div[data-testid="stForm"] {
-            width: min(100%, 680px);
+            width: min(100%, 620px);
             margin: 0 auto;
-            padding: clamp(32px, 4vw, 56px);
+            padding: clamp(30px, 4vw, 48px);
             border: 1px solid #e6e6e6;
             border-radius: 8px;
             background: #ffffff;
@@ -40,28 +44,35 @@ def render_login_page():
         }
 
         .login-title {
-            margin: 0 0 clamp(24px, 3vw, 38px);
+            margin: 0 0 clamp(22px, 3vw, 34px);
             color: #333333;
-            font-size: clamp(30px, 3vw, 44px);
+            font-size: clamp(30px, 3vw, 40px);
             font-weight: 700;
             line-height: 1.2;
         }
 
         div[data-testid="stForm"] div[data-testid="stTextInput"] {
-            margin-bottom: clamp(18px, 2.4vw, 28px);
+            margin-bottom: clamp(16px, 2.2vw, 24px);
+            width: 100%;
         }
 
         div[data-testid="stForm"] div[data-testid="stTextInputRootElement"] {
-            min-height: clamp(56px, 5vw, 72px);
+            min-height: clamp(54px, 5vw, 64px);
             border: 1px solid #d8d8d8 !important;
             border-radius: 6px !important;
             background: #ffffff !important;
             box-shadow: none !important;
         }
 
+        div[data-testid="stForm"] div[data-baseweb="base-input"] {
+            width: 100%;
+            background: #ffffff !important;
+        }
+
         div[data-testid="stForm"] div[data-baseweb="input"] input {
             color: #333333;
-            font-size: clamp(17px, 1.6vw, 22px);
+            background: #ffffff !important;
+            font-size: clamp(16px, 1.5vw, 20px);
         }
 
         div[data-testid="stForm"] div[data-baseweb="input"] input::placeholder {
@@ -79,13 +90,13 @@ def render_login_page():
             display: flex !important;
             align-items: center;
             justify-content: center;
-            height: clamp(58px, 5vw, 72px);
-            margin-top: clamp(14px, 2vw, 24px);
+            height: clamp(54px, 5vw, 62px);
+            margin-top: clamp(12px, 2vw, 20px);
             border: 0;
             border-radius: 6px;
             background: #c9342c !important;
             color: #ffffff !important;
-            font-size: clamp(18px, 1.5vw, 22px);
+            font-size: clamp(17px, 1.5vw, 20px);
             font-weight: 700;
             width: 100% !important;
         }
@@ -102,20 +113,13 @@ def render_login_page():
         }
 
         @media (max-width: 760px) {
-            section[data-testid="stSidebar"][aria-expanded="true"] ~ div section[data-testid="stMain"] .block-container,
-            section[data-testid="stSidebar"][aria-expanded="true"] ~ section[data-testid="stMain"] .block-container {
-                margin-left: 300px !important;
-                width: calc(100vw - 300px) !important;
-                max-width: calc(100vw - 300px) !important;
-            }
-
             .block-container {
                 padding: 1.5rem 1rem 1rem;
             }
 
             div[data-testid="stForm"] {
                 width: 100%;
-                padding: 28px 20px;
+                padding: 26px 20px;
                 box-shadow: none;
             }
         }

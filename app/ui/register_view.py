@@ -3,7 +3,7 @@ import streamlit as st
 from bll.auth_bll import AuthPresenter
 
 
-def render_form_style():
+def render_form_style(max_width="1120px"):
     st.markdown(
         """
         <style>
@@ -22,22 +22,22 @@ def render_form_style():
         .block-container {
             width: 100%;
             max-width: 100%;
-            padding: clamp(2rem, 6vh, 5rem) clamp(1rem, 3vw, 3rem) 2rem;
+            padding: clamp(1rem, 3.5vh, 2.25rem) clamp(1rem, 3vw, 3rem) 2rem;
         }
 
         .page-title {
-            width: min(100%, 1480px);
-            margin: 0 auto 22px;
+            width: min(100%, __MAX_WIDTH__);
+            margin: 0 auto 12px;
             color: #2f323a;
-            font-size: clamp(30px, 2.6vw, 42px);
+            font-size: clamp(28px, 2.4vw, 38px);
             font-weight: 700;
             line-height: 1.2;
         }
 
         div[data-testid="stForm"] {
-            width: min(100%, 1480px);
+            width: min(100%, __MAX_WIDTH__);
             margin: 0 auto;
-            padding: clamp(20px, 2.4vw, 32px);
+            padding: clamp(16px, 2vw, 22px);
             border: 1px solid #e5e7eb;
             border-radius: 8px;
             background: #ffffff;
@@ -52,7 +52,7 @@ def render_form_style():
 
         div[data-testid="stForm"] div[data-testid="stTextInput"],
         div[data-testid="stForm"] div[data-testid="stTextArea"] {
-            margin-bottom: 16px;
+            margin-bottom: 8px;
         }
 
         div[data-testid="stForm"] div[data-testid="stTextInputRootElement"],
@@ -64,17 +64,18 @@ def render_form_style():
         }
 
         div[data-testid="stForm"] div[data-testid="stTextInputRootElement"] {
-            min-height: 46px;
+            min-height: 44px;
         }
 
         div[data-testid="stForm"] textarea {
-            min-height: 112px !important;
+            min-height: 88px !important;
             resize: vertical;
         }
 
         div[data-testid="stForm"] input,
         div[data-testid="stForm"] textarea {
             color: #2f323a !important;
+            background: #ffffff !important;
             font-size: 15px !important;
         }
 
@@ -86,7 +87,7 @@ def render_form_style():
 
         div[data-testid="stForm"] div[data-testid="stFormSubmitButton"] button {
             min-width: 180px;
-            height: 44px;
+            height: 42px;
             border: 0;
             border-radius: 6px;
             background: #3157b7 !important;
@@ -101,16 +102,23 @@ def render_form_style():
         }
 
         @media (max-width: 900px) {
-            section[data-testid="stSidebar"][aria-expanded="true"] ~ div section[data-testid="stMain"] .block-container,
-            section[data-testid="stSidebar"][aria-expanded="true"] ~ section[data-testid="stMain"] .block-container {
-                margin-left: 300px !important;
-                width: calc(100vw - 300px) !important;
-                max-width: calc(100vw - 300px) !important;
+            .page-title {
+                font-size: clamp(24px, 5vw, 30px);
             }
 
             div[data-testid="stForm"] {
                 width: 100%;
                 padding: 18px;
+            }
+
+            div[data-testid="stForm"] div[data-testid="stHorizontalBlock"] {
+                flex-direction: column;
+                gap: 0 !important;
+            }
+
+            div[data-testid="stForm"] div[data-testid="column"] {
+                width: 100% !important;
+                flex: 1 1 100% !important;
             }
 
             div[data-testid="stForm"] div[data-testid="stFormSubmitButton"],
@@ -119,13 +127,13 @@ def render_form_style():
             }
         }
         </style>
-        """,
+        """.replace("__MAX_WIDTH__", max_width),
         unsafe_allow_html=True,
     )
 
 
 def render_register_page():
-    render_form_style()
+    render_form_style("1120px")
     st.markdown('<div class="page-title">Tờ khai đề nghị cấp hộ chiếu</div>', unsafe_allow_html=True)
 
     with st.form(key="register_form"):
@@ -177,7 +185,7 @@ def render_register_page():
 
 
 def render_admin_user_page():
-    render_form_style()
+    render_form_style("640px")
     st.markdown('<div class="page-title">Cấp tài khoản nhân viên</div>', unsafe_allow_html=True)
 
     if st.session_state.get("user_role") != "ROLE_GS":
