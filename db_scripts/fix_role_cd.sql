@@ -22,6 +22,22 @@ BEGIN
     v_username := UPPER(TRIM(p_username));
     v_db_role := UPPER(TRIM(p_db_role));
 
+    IF NOT REGEXP_LIKE(v_username, '^[A-Z][A-Z0-9_]{2,29}$') THEN
+        RAISE_APPLICATION_ERROR(-20010, 'Ten dang nhap khong hop le');
+    END IF;
+
+    IF v_db_role NOT IN ('ROLE_CD', 'ROLE_XT', 'ROLE_XD', 'ROLE_LT', 'ROLE_GS') THEN
+        RAISE_APPLICATION_ERROR(-20011, 'Vai tro khong hop le');
+    END IF;
+
+    IF NOT REGEXP_LIKE(p_raw_password, '^[A-Za-z0-9_@#$]{1,30}$') THEN
+        RAISE_APPLICATION_ERROR(-20012, 'Mat khau khong hop le');
+    END IF;
+
+    IF NOT REGEXP_LIKE(p_password_hash, '^[0-9a-fA-F]{64}$') THEN
+        RAISE_APPLICATION_ERROR(-20013, 'Hash mat khau khong hop le');
+    END IF;
+
     INSERT INTO PASSPORT_APP.APP_USERS (USERNAME, PASSWORD_HASH, DB_ROLE, IS_ACTIVE)
     VALUES (LOWER(TRIM(p_username)), p_password_hash, v_db_role, 1);
 
