@@ -168,7 +168,7 @@ INSERT INTO PASSPORT_APP.PASSPORT_DATA (CCCD, HO_TEN, GIOI_TINH, NGAY_SINH, MA_D
 VALUES ('079203000021', 'Nguyen Phuc A', 'Nam', TO_DATE('1990-01-01', 'YYYY-MM-DD'), '01', '00', '0901234567', 'npa@email.com', '01', 'Cap ho chieu lan dau', 'Cuc QLXNC Ha Noi', 'Da luu tru');
 
 INSERT INTO PASSPORT_APP.PASSPORT_DATA (CCCD, HO_TEN, GIOI_TINH, NGAY_SINH, MA_DAN_TOC, MA_TON_GIAO, SDT, EMAIL, MA_TINH_THUONG_TRU, NOI_DUNG_DE_NGHI, CO_QUAN_TIEP_NHAN, TRANG_THAI) 
-VALUES ('079203000022', 'Tran Thi Binh', 'Nu', TO_DATE('1995-05-05', 'YYYY-MM-DD'), '01', '01', '0907654321', 'ttb@email.com', '01', 'Cap lai ho chieu lan dau', 'Cuc QLXNC Ha Noi', 'Da hoan thanh');
+VALUES ('079203000022', 'Tran Thi Binh', 'Nu', TO_DATE('1995-05-05', 'YYYY-MM-DD'), '01', '01', '0907654321', 'ttb@email.com', '01', 'Cap ho chieu lan dau', 'Cuc QLXNC Ha Noi', 'Da hoan thanh');
 
 INSERT INTO PASSPORT_APP.PASSPORT_DATA (CCCD, HO_TEN, GIOI_TINH, NGAY_SINH, MA_DAN_TOC, MA_TON_GIAO, SDT, EMAIL, MA_TINH_THUONG_TRU, NOI_DUNG_DE_NGHI, CO_QUAN_TIEP_NHAN, TRANG_THAI) 
 VALUES ('079203000023', 'Le Van Cuong', 'Nam', TO_DATE('1988-08-08', 'YYYY-MM-DD'), '02', '00', '0909999888', 'lvc@email.com', '01', 'Cap ho chieu lan dau', 'Cuc QLXNC Ha Noi', 'Da luu tru');
