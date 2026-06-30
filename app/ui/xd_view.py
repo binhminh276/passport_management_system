@@ -202,6 +202,28 @@ def render_xd_page():
                         </div>
                     """, unsafe_allow_html=True)
                     
+                    # Tạo ID duy nhất cho marker dựa trên mã hồ sơ (để không bị lỗi nếu nằm trong vòng lặp)
+                    marker_id = f"marker-detail-{hs['reg_id']}"
+                    
+                    # Cấu hình màu sắc nút XEM CHI TIẾT (Nền xanh thông tin chuyên nghiệp, chữ trắng)
+                    st.markdown(f"""
+                        <span id="{marker_id}"></span>
+                        <style>
+                            div:has(#{marker_id}) ~ div button {{
+                                background-color: #0EA5E9 !important;
+                                color: #FFFFFF !important;
+                                border: 1px solid #0EA5E9 !important;
+                                font-weight: bold !important;
+                                transition: background-color 0.2s ease;
+                            }}
+                            div:has(#{marker_id}) ~ div button:hover {{
+                                background-color: #0284C7 !important;
+                                border-color: #0284C7 !important;
+                            }}
+                        </style>
+                    """, unsafe_allow_html=True)
+
+                    # Logic code cũ được giữ nguyên vẹn 100%
                     if st.button(f"Xem chi tiết HS-{hs['reg_id']:04d}", key=f"select_{hs['reg_id']}", use_container_width=True):
                         st.session_state.selected_hs = hs['reg_id']
                         st.rerun()
@@ -216,7 +238,9 @@ def render_xd_page():
                 hs_ct = xd_bll.get_chi_tiet_ho_so(current_user, st.session_state.selected_hs)
                 
                 if hs_ct:
-                    c_info, c_btn1, c_btn2 = st.columns([2, 1, 1])
+                    # Chia lại thành 4 cột (Thông tin chiếm 1.8 phần, các nút chiếm phần còn lại)
+                    c_info, c_btn1, c_btn2, c_btn3 = st.columns([1.8, 0.8, 0.8, 1.1])
+                    
                     with c_info:
                         st.markdown(f"""
                             <h2 style='margin:0; font-weight:bold; color:#F8FAFC;'>{hs_ct['ho_ten']}</h2>
@@ -224,23 +248,105 @@ def render_xd_page():
                             <span class='hs-sub' style='color: #94A3B8;'>&nbsp;&nbsp;•&nbsp;&nbsp;Số CCCD: {hs_ct['cccd']}</span>
                         """, unsafe_allow_html=True)
                     
+                    # Logic kiểm tra trạng thái để bật/tắt nút (GIỮ NGUYÊN HOÀN TOÀN LOGIC CŨ)
+                    is_processed = hs_ct['trang_thai'] in ['Da duyet', 'Tu choi', 'Da luu tru']
+                    can_archive = hs_ct['trang_thai'] in ['Da duyet', 'Tu choi']
+
                     with c_btn1:
+                        # Phong cách màu sắc riêng cho nút TỪ CHỐI
+                        st.markdown("""
+                            <span id="marker-reject"></span>
+                            <style>
+                                div:has(#marker-reject) ~ div button:not([disabled]) {
+                                    background-color: #DC2626 !important;
+                                    color: #FFFFFF !important;
+                                    border: 1px solid #DC2626 !important;
+                                    font-weight: bold !important;
+                                }
+                                div:has(#marker-reject) ~ div button:not([disabled]):hover {
+                                    background-color: #B91C1C !important;
+                                    border-color: #B91C1C !important;
+                                }
+                                div:has(#marker-reject) ~ div button[disabled] {
+                                    background-color: #1E293B !important;
+                                    color: #64748B !important;
+                                    border: 1px solid #334155 !important;
+                                    opacity: 0.6 !important;
+                                }
+                            </style>
+                        """, unsafe_allow_html=True)
+                        
                         st.markdown("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
-                        if st.button(" TỪ CHỐI", key="btn_reject", use_container_width=True):
+                        if st.button(" TỪ CHỐI", key="btn_reject", use_container_width=True, disabled=is_processed):
                             xd_bll.xu_ly_ho_so(current_user, hs_ct['reg_id'], hs_ct['trang_thai'], "Từ chối")
                             st.session_state.selected_hs = None
                             st.success("Đã từ chối hồ sơ.")
                             st.rerun()
+                            
                     with c_btn2:
+                        # Phong cách màu sắc riêng cho nút PHÊ DUYỆT
+                        st.markdown("""
+                            <span id="marker-approve"></span>
+                            <style>
+                                div:has(#marker-approve) ~ div button:not([disabled]) {
+                                    background-color: #16A34A !important;
+                                    color: #FFFFFF !important;
+                                    border: 1px solid #16A34A !important;
+                                    font-weight: bold !important;
+                                }
+                                div:has(#marker-approve) ~ div button:not([disabled]):hover {
+                                    background-color: #15803D !important;
+                                    border-color: #15803D !important;
+                                }
+                                div:has(#marker-approve) ~ div button[disabled] {
+                                    background-color: #1E293B !important;
+                                    color: #64748B !important;
+                                    border: 1px solid #334155 !important;
+                                    opacity: 0.6 !important;
+                                }
+                            </style>
+                        """, unsafe_allow_html=True)
+                        
                         st.markdown("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
-                        if st.button(" PHÊ DUYỆT", key="btn_approve", type="primary", use_container_width=True):
+                        if st.button(" PHÊ DUYỆT", key="btn_approve", type="primary", use_container_width=True, disabled=is_processed):
                             xd_bll.xu_ly_ho_so(current_user, hs_ct['reg_id'], hs_ct['trang_thai'], "Duyệt")
                             st.session_state.selected_hs = None
                             st.success("Đã phê duyệt hồ sơ.")
                             st.rerun()
+                            
+                    with c_btn3:
+                        # Phong cách màu sắc riêng cho nút LƯU TRỮ
+                        st.markdown("""
+                            <span id="marker-archive"></span>
+                            <style>
+                                div:has(#marker-archive) ~ div button:not([disabled]) {
+                                    background-color: #2563EB !important;
+                                    color: #FFFFFF !important;
+                                    border: 1px solid #2563EB !important;
+                                    font-weight: bold !important;
+                                }
+                                div:has(#marker-archive) ~ div button:not([disabled]):hover {
+                                    background-color: #1D4ED8 !important;
+                                    border-color: #1D4ED8 !important;
+                                }
+                                div:has(#marker-archive) ~ div button[disabled] {
+                                    background-color: #1E293B !important;
+                                    color: #64748B !important;
+                                    border: 1px solid #334155 !important;
+                                    opacity: 0.6 !important;
+                                }
+                            </style>
+                        """, unsafe_allow_html=True)
+                        
+                        st.markdown("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
+                        # Đã loại bỏ icon hộp hàng ra khỏi nhãn chữ theo quy định thuần text
+                        if st.button(" LƯU TRỮ", key="btn_archive", use_container_width=True, disabled=not can_archive):
+                            xd_bll.xu_ly_ho_so(current_user, hs_ct['reg_id'], hs_ct['trang_thai'], "Lưu trữ")
+                            st.session_state.selected_hs = None
+                            st.success("Đã chuyển hồ sơ sang bộ phận Lưu trữ thành công!")
+                            st.rerun()
 
                     st.markdown("<hr style='border-color:#1E293B; margin: 15px 0;'>", unsafe_allow_html=True)
-
                     ct_left, ct_right = st.columns([1.1, 1.1])
                     with ct_left:
                         st.markdown(f"""<div style='background:#172133; padding:15px; border-radius:8px; border: 1px solid #283548;'>
