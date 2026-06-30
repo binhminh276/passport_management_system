@@ -46,20 +46,22 @@ def execute_cap_nhat_ho_so(username, reg_id, old_status, new_status, new_mac_lab
         connection = get_db_connection(username, "123")
         cursor = connection.cursor()
         
-        # 1. Cập nhật trạng thái và nhãn OLS
+        # 1. GHI LOG LỊCH SỬ TRƯỚC (ĐẢO LÊN TRÊN)
+        # Lúc này hồ sơ vẫn mang nhãn cũ (CONF:XD:TW) nên cán bộ vẫn nhìn thấy bản ghi cha
+        cursor.execute("""
+            INSERT INTO PASSPORT_APP.PASSPORT_REQUEST_HISTORY 
+            (REG_ID, TRANG_THAI_CU, TRANG_THAI_MOI, NGUOI_CAP_NHAT) 
+            VALUES (:reg_id, :old_status, :new_status, :username)
+        """, reg_id=reg_id, old_status=old_status, new_status=new_status, username=username)
+
+        # 2. CẬP NHẬT TRẠNG THÁI VÀ NHÃN OLS SAU (ĐƯA XUỐNG DƯỚI)
+        # Chạy xong lệnh này là hồ sơ sẽ tàng hình khỏi bộ phận Xét duyệt để chuyển qua Lưu trữ
         cursor.execute("""
             UPDATE PASSPORT_APP.PASSPORT_DATA 
             SET TRANG_THAI = :new_status,
                 MAC_LABEL = CHAR_TO_LABEL('PASSPORT_MAC_POL', :new_mac_label)
             WHERE REG_ID = :reg_id
         """, new_status=new_status, new_mac_label=new_mac_label, reg_id=reg_id)
-        
-        # 2. Ghi log lịch sử
-        cursor.execute("""
-            INSERT INTO PASSPORT_APP.PASSPORT_REQUEST_HISTORY 
-            (REG_ID, TRANG_THAI_CU, TRANG_THAI_MOI, NGUOI_CAP_NHAT) 
-            VALUES (:reg_id, :old_status, :new_status, :username)
-        """, reg_id=reg_id, old_status=old_status, new_status=new_status, username=username)
         
         connection.commit()
         cursor.close()
@@ -68,6 +70,7 @@ def execute_cap_nhat_ho_so(username, reg_id, old_status, new_status, new_mac_lab
     finally:
         if connection is not None:
             connection.close()
+            
 def fetch_ten_tinh_quan_ly(username):
     """Lấy tên tỉnh quản lý của cán bộ bằng cách JOIN bảng APP_USERS và TINH_THANH."""
     connection = None
