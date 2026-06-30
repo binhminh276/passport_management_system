@@ -1,6 +1,33 @@
+import re
+from pathlib import Path
+
 import streamlit as st
 
 from bll.auth_bll import AuthPresenter
+
+
+UPLOAD_DIR = Path(__file__).resolve().parents[2] / "uploads"
+
+
+def save_uploaded_portrait(uploaded_file, cccd):
+    if uploaded_file is None:
+        return ""
+
+    suffix = Path(uploaded_file.name).suffix.lower()
+    if suffix not in {".jpg", ".jpeg", ".png"}:
+        raise ValueError("Ảnh chân dung chỉ nhận file JPG, JPEG hoặc PNG")
+
+    clean_cccd = re.sub(r"[^0-9]", "", cccd or "")
+    if len(clean_cccd) == 12:
+        file_name = f"avatar_{clean_cccd}{suffix}"
+    else:
+        stem = re.sub(r"[^A-Za-z0-9_]", "_", Path(uploaded_file.name).stem).strip("_") or "avatar"
+        file_name = f"{stem}{suffix}"
+
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    file_path = UPLOAD_DIR / file_name
+    file_path.write_bytes(uploaded_file.getbuffer())
+    return f"/uploads/{file_name}"
 
 
 def render_form_style(max_width="1120px"):
@@ -51,12 +78,14 @@ def render_form_style(max_width="1120px"):
         }
 
         div[data-testid="stForm"] div[data-testid="stTextInput"],
-        div[data-testid="stForm"] div[data-testid="stTextArea"] {
+        div[data-testid="stForm"] div[data-testid="stTextArea"],
+        div[data-testid="stForm"] div[data-testid="stFileUploader"] {
             margin-bottom: 8px;
         }
 
         div[data-testid="stForm"] div[data-testid="stTextInputRootElement"],
-        div[data-testid="stForm"] textarea {
+        div[data-testid="stForm"] textarea,
+        div[data-testid="stForm"] section[data-testid="stFileUploaderDropzone"] {
             border: 1px solid #d8dfe8 !important;
             border-radius: 6px !important;
             background: #ffffff !important;
@@ -72,8 +101,18 @@ def render_form_style(max_width="1120px"):
             resize: vertical;
         }
 
+        div[data-testid="stForm"] section[data-testid="stFileUploaderDropzone"] {
+            min-height: 44px;
+            padding: 8px 12px;
+        }
+
+        div[data-testid="stForm"] div[data-testid="stFileUploader"] svg {
+            display: none !important;
+        }
+
         div[data-testid="stForm"] input,
-        div[data-testid="stForm"] textarea {
+        div[data-testid="stForm"] textarea,
+        div[data-testid="stForm"] div[data-testid="stFileUploader"] {
             color: #2f323a !important;
             background: #ffffff !important;
             font-size: 15px !important;
@@ -154,11 +193,33 @@ def render_register_page():
                 value="Cục Quản lý xuất nhập cảnh",
             )
 
-        anh_chan_dung_path = st.text_input("Đường dẫn ảnh chân dung 4x6")
+        uploaded_portrait = st.file_uploader(
+            "Chọn ảnh chân dung 4x6",
+            type=["jpg", "jpeg", "png"],
+        )
+        selected_portrait_path = ""
+        if uploaded_portrait is not None:
+            suffix = Path(uploaded_portrait.name).suffix.lower()
+            clean_cccd = re.sub(r"[^0-9]", "", cccd or "")
+            if len(clean_cccd) == 12:
+                selected_portrait_path = f"/uploads/avatar_{clean_cccd}{suffix}"
+            else:
+                stem = re.sub(r"[^A-Za-z0-9_]", "_", Path(uploaded_portrait.name).stem).strip("_") or "avatar"
+                selected_portrait_path = f"/uploads/{stem}{suffix}"
+        anh_chan_dung_path = st.text_input(
+            "Đường dẫn ảnh chân dung 4x6",
+            value=selected_portrait_path,
+        )
         submit_btn = st.form_submit_button("Đồng ý và Tiếp tục")
 
         if submit_btn:
             auth_presenter = AuthPresenter()
+            if uploaded_portrait is not None:
+                try:
+                    anh_chan_dung_path = save_uploaded_portrait(uploaded_portrait, cccd)
+                except ValueError as exc:
+                    st.markdown(f"**{str(exc)}**")
+                    return
             ngay_sinh = auth_presenter.parse_date(ngay_sinh_text)
             data = {
                 "cccd": cccd,
