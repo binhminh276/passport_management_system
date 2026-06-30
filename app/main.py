@@ -1,7 +1,6 @@
 import streamlit as st
 from ui import login_view, register_view, xt_view, xd_view, lt_view, gs_view
 
-# Nhúng mã CSS tùy chỉnh.
 def apply_custom_css():
     custom_css = """
     <style>
@@ -57,7 +56,6 @@ def apply_custom_css():
 def main():
     st.set_page_config(page_title="Hệ thống Quản lý Hộ chiếu", layout="wide")
     
-    # Gọi hàm áp dụng CSS ngay sau khi khởi tạo trang
     apply_custom_css()
 
     if "current_page" not in st.session_state:
@@ -77,6 +75,9 @@ def main():
     else:
         st.sidebar.write(f"Quyền hiện tại: {st.session_state.user_role}")
         if st.session_state.user_role == "ROLE_GS":
+            if st.sidebar.button("Xem nhật ký hệ thống"):
+                st.session_state.current_page = "gs_dashboard"
+                st.rerun()
             if st.sidebar.button("Cấp tài khoản nhân viên"):
                 st.session_state.current_page = "admin_users"
                 st.rerun()
