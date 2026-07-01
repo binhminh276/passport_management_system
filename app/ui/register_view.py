@@ -37,6 +37,9 @@ def render_form_style(max_width="1120px"):
         button[aria-label="Show password text"],
         button[aria-label="Hide password text"],
         div[data-testid="stAppDeployButton"],
+        div[data-testid="stToolbar"],
+        div[data-testid="stStatusWidget"],
+        div[data-testid="stDecoration"],
         span[data-testid="stMainMenu"],
         header[data-testid="stHeader"] button:not([data-testid="stExpandSidebarButton"]) {
             display: none !important;
@@ -49,14 +52,27 @@ def render_form_style(max_width="1120px"):
         .block-container {
             width: 100%;
             max-width: 100%;
-            padding: clamp(1rem, 3.5vh, 2.25rem) clamp(1rem, 3vw, 3rem) 2rem;
+            padding: clamp(0.75rem, 2.5vh, 1.5rem) clamp(1rem, 3vw, 2.25rem) 1.5rem;
+        }
+
+        section[data-testid="stSidebar"] div[data-testid="stElementContainer"],
+        section[data-testid="stSidebar"] div[data-testid="stButton"] {
+            width: 100% !important;
+        }
+
+        section[data-testid="stSidebar"] div[data-testid="stButton"] button {
+            width: 100% !important;
+            min-height: 44px;
+            border-radius: 6px;
+            font-weight: 700;
+            justify-content: center;
         }
 
         .page-title {
             width: min(100%, __MAX_WIDTH__);
-            margin: 0 auto 12px;
+            margin: 0 auto 10px;
             color: #2f323a;
-            font-size: clamp(28px, 2.4vw, 38px);
+            font-size: clamp(26px, 2.2vw, 34px);
             font-weight: 700;
             line-height: 1.2;
         }
@@ -64,11 +80,12 @@ def render_form_style(max_width="1120px"):
         div[data-testid="stForm"] {
             width: min(100%, __MAX_WIDTH__);
             margin: 0 auto;
-            padding: clamp(16px, 2vw, 22px);
+            padding: clamp(16px, 1.8vw, 20px);
             border: 1px solid #e5e7eb;
             border-radius: 8px;
             background: #ffffff;
             box-sizing: border-box;
+            box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
         }
 
         div[data-testid="stForm"] label {
@@ -80,7 +97,7 @@ def render_form_style(max_width="1120px"):
         div[data-testid="stForm"] div[data-testid="stTextInput"],
         div[data-testid="stForm"] div[data-testid="stTextArea"],
         div[data-testid="stForm"] div[data-testid="stFileUploader"] {
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         div[data-testid="stForm"] div[data-testid="stTextInputRootElement"],
@@ -93,11 +110,11 @@ def render_form_style(max_width="1120px"):
         }
 
         div[data-testid="stForm"] div[data-testid="stTextInputRootElement"] {
-            min-height: 44px;
+            min-height: 42px;
         }
 
         div[data-testid="stForm"] textarea {
-            min-height: 88px !important;
+            min-height: 82px !important;
             resize: vertical;
         }
 
@@ -106,7 +123,8 @@ def render_form_style(max_width="1120px"):
             padding: 8px 12px;
         }
 
-        div[data-testid="stForm"] div[data-testid="stFileUploader"] svg {
+        div[data-testid="stForm"] div[data-testid="stFileUploader"] svg,
+        div[data-testid="stForm"] div[data-testid="stFileUploader"] [data-testid="stIconMaterial"] {
             display: none !important;
         }
 
@@ -125,7 +143,7 @@ def render_form_style(max_width="1120px"):
         }
 
         div[data-testid="stForm"] div[data-testid="stFormSubmitButton"] button {
-            min-width: 180px;
+            min-width: 220px;
             height: 42px;
             border: 0;
             border-radius: 6px;
@@ -172,7 +190,7 @@ def render_form_style(max_width="1120px"):
 
 
 def render_register_page():
-    render_form_style("1120px")
+    render_form_style("1180px")
     st.markdown('<div class="page-title">Tờ khai đề nghị cấp hộ chiếu</div>', unsafe_allow_html=True)
 
     with st.form(key="register_form"):
@@ -193,10 +211,12 @@ def render_register_page():
                 value="Cục Quản lý xuất nhập cảnh",
             )
 
-        uploaded_portrait = st.file_uploader(
-            "Chọn ảnh chân dung 4x6",
-            type=["jpg", "jpeg", "png"],
-        )
+        img_col1, img_col2 = st.columns(2, gap="large")
+        with img_col1:
+            uploaded_portrait = st.file_uploader(
+                "Chọn ảnh chân dung 4x6",
+                type=["jpg", "jpeg", "png"],
+            )
         selected_portrait_path = ""
         if uploaded_portrait is not None:
             suffix = Path(uploaded_portrait.name).suffix.lower()
@@ -206,10 +226,11 @@ def render_register_page():
             else:
                 stem = re.sub(r"[^A-Za-z0-9_]", "_", Path(uploaded_portrait.name).stem).strip("_") or "avatar"
                 selected_portrait_path = f"/uploads/{stem}{suffix}"
-        anh_chan_dung_path = st.text_input(
-            "Đường dẫn ảnh chân dung 4x6",
-            value=selected_portrait_path,
-        )
+        with img_col2:
+            anh_chan_dung_path = st.text_input(
+                "Đường dẫn ảnh chân dung 4x6",
+                value=selected_portrait_path,
+            )
         submit_btn = st.form_submit_button("Đồng ý và Tiếp tục")
 
         if submit_btn:
@@ -246,7 +267,7 @@ def render_register_page():
 
 
 def render_admin_user_page():
-    render_form_style("640px")
+    render_form_style("840px")
     st.markdown('<div class="page-title">Cấp tài khoản nhân viên</div>', unsafe_allow_html=True)
 
     if st.session_state.get("user_role") != "ROLE_GS":

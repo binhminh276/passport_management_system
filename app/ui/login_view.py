@@ -21,6 +21,9 @@ def render_login_page():
         }
 
         div[data-testid="stAppDeployButton"],
+        div[data-testid="stToolbar"],
+        div[data-testid="stStatusWidget"],
+        div[data-testid="stDecoration"],
         span[data-testid="stMainMenu"],
         header[data-testid="stHeader"] button:not([data-testid="stExpandSidebarButton"]) {
             display: none !important;
@@ -29,35 +32,48 @@ def render_login_page():
         .block-container {
             width: 100%;
             max-width: 100%;
-            padding: clamp(2rem, 8vh, 5rem) clamp(1rem, 4vw, 4rem) 2rem;
+            padding: clamp(1.5rem, 5vh, 3rem) clamp(1rem, 4vw, 4rem) 1.5rem;
+        }
+
+        section[data-testid="stSidebar"] div[data-testid="stElementContainer"],
+        section[data-testid="stSidebar"] div[data-testid="stButton"] {
+            width: 100% !important;
+        }
+
+        section[data-testid="stSidebar"] div[data-testid="stButton"] button {
+            width: 100% !important;
+            min-height: 44px;
+            border-radius: 6px;
+            font-weight: 700;
+            justify-content: center;
         }
 
         div[data-testid="stForm"] {
-            width: min(100%, 620px);
+            width: min(100%, 520px);
             margin: 0 auto;
-            padding: clamp(30px, 4vw, 48px);
+            padding: clamp(26px, 3vw, 36px);
             border: 1px solid #e6e6e6;
             border-radius: 8px;
             background: #ffffff;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 26px rgba(0, 0, 0, 0.07);
             box-sizing: border-box;
         }
 
         .login-title {
-            margin: 0 0 clamp(22px, 3vw, 34px);
+            margin: 0 0 24px;
             color: #333333;
-            font-size: clamp(30px, 3vw, 40px);
+            font-size: clamp(28px, 3vw, 34px);
             font-weight: 700;
             line-height: 1.2;
         }
 
         div[data-testid="stForm"] div[data-testid="stTextInput"] {
-            margin-bottom: clamp(16px, 2.2vw, 24px);
+            margin-bottom: 16px;
             width: 100%;
         }
 
         div[data-testid="stForm"] div[data-testid="stTextInputRootElement"] {
-            min-height: clamp(54px, 5vw, 64px);
+            min-height: 52px;
             border: 1px solid #d8d8d8 !important;
             border-radius: 6px !important;
             background: #ffffff !important;
@@ -72,7 +88,7 @@ def render_login_page():
         div[data-testid="stForm"] div[data-baseweb="input"] input {
             color: #333333;
             background: #ffffff !important;
-            font-size: clamp(16px, 1.5vw, 20px);
+            font-size: 16px;
         }
 
         div[data-testid="stForm"] div[data-baseweb="input"] input::placeholder {
@@ -90,13 +106,13 @@ def render_login_page():
             display: flex !important;
             align-items: center;
             justify-content: center;
-            height: clamp(54px, 5vw, 62px);
-            margin-top: clamp(12px, 2vw, 20px);
+            height: 52px;
+            margin-top: 10px;
             border: 0;
             border-radius: 6px;
             background: #c9342c !important;
             color: #ffffff !important;
-            font-size: clamp(17px, 1.5vw, 20px);
+            font-size: 16px;
             font-weight: 700;
             width: 100% !important;
         }
