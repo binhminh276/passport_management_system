@@ -208,27 +208,27 @@ COMMIT;
 ALTER SESSION SET CONTAINER = FREEPDB1;
 
 -- Test 1 (Chính sách 1): Xem bảng RESIDENT_DATA 
--- => Kết quả mong đợi: Bảng trống trơn (0 rows) do bị chặn bởi VPD.
+-- => Kết quả: Bảng trống trơn (0 rows) do bị chặn bởi VPD.
 SELECT * FROM PASSPORT_APP.RESIDENT_DATA;
 
 -- Test 2 (OLS): Xem bảng Hồ sơ 
--- => Kết quả mong đợi: Chỉ thấy các hồ sơ trạng thái 'Da xac thuc', 'Tu choi', 'Da duyet'.
+-- => Kết quả: Chỉ thấy các hồ sơ trạng thái 'Da xac thuc', 'Tu choi', 'Da duyet'.
 SELECT REG_ID, CCCD, TRANG_THAI, MAC_LABEL FROM PASSPORT_APP.PASSPORT_DATA;
 
 -- Test 3 (Chính sách 2): Xem bảng Lịch sử
--- => Kết quả mong đợi: Chỉ thấy các dòng có cột NGUOI_CAP_NHAT là 'XD_NV01' (nếu có). 
+-- => Kết quả: Chỉ thấy các dòng có cột NGUOI_CAP_NHAT là 'XD_NV01'. 
 -- Không thấy lịch sử của XD_NV02 hoặc XT_NV01.
 SELECT * FROM PASSPORT_APP.PASSPORT_REQUEST_HISTORY;
 
 -- Test 4 (Chính sách 3): Xem bảng PASSPORT_DATA trên xd_nv01 (Cán bộ tỉnh '02')
--- => Kết quả mong đợi: Do có OLS + VPD, xd_nv01 chỉ thấy các hồ sơ ở trạng thái xét duyệt 
+-- => Kết quả: Do có OLS + VPD, xd_nv01 chỉ thấy các hồ sơ ở trạng thái xét duyệt 
 -- VÀ ĐỒNG THỜI hồ sơ đó phải thuộc tỉnh '02' (Mã tỉnh thường trú). Các tỉnh khác bị giấu hoàn toàn.
 SELECT REG_ID, CCCD, MA_TINH_THUONG_TRU, TRANG_THAI FROM PASSPORT_APP.PASSPORT_DATA;
 
 /* ==========================================================
    TEST TRÊN TÀI KHOẢN: xd_nv02 (Cán bộ tỉnh '01')
    ========================================================== */
--- => Kết quả mong đợi: Chỉ thấy các hồ sơ thuộc tỉnh '01'. Không thể can thiệp chéo sang tỉnh '02' của xd_nv01.
+-- => Kết quả: Chỉ thấy các hồ sơ thuộc tỉnh '01'. Không thể can thiệp chéo sang tỉnh '02' của xd_nv01.
 SELECT REG_ID, CCCD, MA_TINH_THUONG_TRU, TRANG_THAI FROM PASSPORT_APP.PASSPORT_DATA;
 
 /* ==========================================================
@@ -236,10 +236,6 @@ SELECT REG_ID, CCCD, MA_TINH_THUONG_TRU, TRANG_THAI FROM PASSPORT_APP.PASSPORT_D
    ========================================================== */
 ALTER SESSION SET CONTAINER = FREEPDB1;
 
--- Đóng vai chủ sở hữu bảng (Không bị chặn bởi VPD)
--- => Kết quả mong đợi: Bảng hiển thị đầy đủ danh sách cư dân gốc.
-SELECT * FROM PASSPORT_APP.RESIDENT_DATA;
-
 -- Đóng vai chủ sở hữu bảng xem lịch sử
--- => Kết quả mong đợi: Xem được toàn bộ lịch sử thao tác của tất cả nhân viên.
+-- => Kết quả: Xem được toàn bộ lịch sử thao tác của tất cả nhân viên.
 SELECT * FROM PASSPORT_APP.PASSPORT_REQUEST_HISTORY;
