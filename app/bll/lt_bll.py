@@ -1,7 +1,8 @@
 from dal import lt_dal
 
-def get_danh_sach_ho_so(db_user, db_password):
-    rows = lt_dal.fetch_danh_sach_ho_so(db_user, db_password)
+
+def get_danh_sach_ho_so(db_user, db_pass):
+    rows = lt_dal.fetch_danh_sach_ho_so(db_user, db_pass)
     return [{
         "reg_id": r[0],
         "noi_dung_de_nghi": r[1],
@@ -12,10 +13,10 @@ def get_danh_sach_ho_so(db_user, db_password):
     } for r in rows]
 
 
-def tra_cuu_ho_so(reg_id, db_user, db_password):
+def tra_cuu_ho_so(reg_id, db_user, db_pass):
     if reg_id is None or reg_id <= 0:
         raise ValueError("Ma ho so khong hop le")
-    row = lt_dal.tra_cuu_ho_so(reg_id, db_user, db_password)
+    row = lt_dal.tra_cuu_ho_so(reg_id, db_user, db_pass)
     if row is None:
         return None
     return {
@@ -28,7 +29,7 @@ def tra_cuu_ho_so(reg_id, db_user, db_password):
     }
 
 
-def hoan_tat_luu_tru(reg_id, nguoi_dung_hien_tai, db_user, db_password):
+def hoan_tat_luu_tru(reg_id, nguoi_dung_hien_tai, db_user, db_pass):
     if reg_id is None:
         raise ValueError("Thieu ma ho so")
-    lt_dal.hoan_tat_luu_tru(reg_id, nguoi_dung_hien_tai, db_user, db_password)
+    lt_dal.hoan_tat_luu_tru(reg_id, nguoi_dung_hien_tai, db_user, db_pass)
